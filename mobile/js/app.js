@@ -6,6 +6,8 @@ var REALM_OBJECT_NAME = "employees";
 
 // A global instances of the Apworks.AWNotificationManager. We only want one.
 self.realmController = null;
+self.sortDirection = "asc";
+self.sortField = "employee";
 
 /**
  * Called when AppWorks is ready
@@ -260,6 +262,9 @@ function showDataView() {
   hide("data-entry-wrapper");
   show("data-view-wrapper");
 
+  var realm = getRealmController();
+  self.sortDirection = realm.QUERY_SORT_ASC;
+  self.sortField = "employee";
   selectAllEmployees();
 }
 
@@ -269,11 +274,31 @@ function showDataView() {
 function selectAllEmployees() {
   var realm = getRealmController();
   var query = realm.queryBuilder.done();
+  sort = {};
+  sort[realm.QUERY_FIELD] = self.sortField;
+  sort[realm.QUERY_SORT] = self.sortDirection;
   select(
     query
+    , sort
     , function(results) {
       outputEmployees(results);
   });
+}
+
+function sortBy(field) {
+  var realm = getRealmController();
+  if(self.sortField == field) {
+    if(self.sortDirection == realm.QUERY_SORT_DESC) {
+      self.sortDirection = realm.QUERY_SORT_ASC;
+    } else {
+      self.sortDirection = realm.QUERY_SORT_DESC;
+    }
+  } else {
+    self.sortDirection = realm.QUERY_SORT_ASC;
+  }
+  self.sortField = field;
+
+  selectAllEmployees();
 }
 
 function outputEmployees(employees) {
@@ -282,8 +307,8 @@ function outputEmployees(employees) {
   html += "<table class='table'>";
   html += "<thead>";
   html += "  <tr>";
-  html += "    <th>Employee Name</th>";
-  html += "    <th>Ability</th>";
+  html += '    <th onclick=\'sortBy("employee")\'>Employee Name</th>';
+  html += '    <th onclick=\'sortBy("ability")\'>Ability</th>';
   html += "  </tr>";
   html += "</thead>";
   html += "<tbody>";
@@ -327,8 +352,10 @@ function showEmployee(id) {
 function selectEmployee(id, success) {
   var realm = getRealmController();
   var query = realm.queryBuilder.equalTo("id",id).done();
+  var sort = null;
   select(
     query
+    , null
     , function(result) {
       success(result[0]);
   });
@@ -337,11 +364,12 @@ function selectEmployee(id, success) {
 /**
  * Perform the realm select
  */
-function select(query, success) {
+function select(query, sort, success) {
   var realm = getRealmController();
   realm.select(
     REALM_OBJECT_NAME
     , query
+    , sort
     , function(result) {
       success(result);
     }
