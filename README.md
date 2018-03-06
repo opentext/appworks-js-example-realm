@@ -517,13 +517,13 @@ Examples
 ```javascript
 // Example 1
 var realm = self.realmController;
-var queryArray = realm.queryBuilder.beginsWith("employee", "smith").and().equalTo("region", "EMEA").and().greaterThan("ability", 7).and().equalTo("active", true).done();
+var queryArray = realm.queryBuilder.contains("employee", "smith").and().equalTo("region", "EMEA").and().greaterThan("ability", 7).and().equalTo("active", true).done();
 ```
 
 ```javascript
 // Example 2
 var realm = self.realmController;
-realm.queryBuilder.beginsWith("employee", "smith");
+realm.queryBuilder.contains("employee", "smith");
 realm.queryBuilder.and().equalTo("region", "EMEA");
 realm.queryBuilder.and().greaterThan("ability", 7);
 realm.queryBuilder.and().equalTo("active", true);
