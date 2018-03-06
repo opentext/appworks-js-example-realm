@@ -491,7 +491,10 @@ JSON example
 [{"type":"equalTo", "field":"id", "value":"unique-guid"}]
 ```
 
-You can chain functions to build the array in one go e.g. queryBuilder.equalTo("field1","value1").and().contains("field2","value2").done();
+You can chain functions to build the array in one go e.g.
+```javascript
+queryBuilder.equalTo("field1","value1").and().contains("field2","value2").done();
+```
 This builds an internal array and returns itself, but by adding .done() at the end, it returns the array itself and clears itself down.
 
 You may also use groups with .beginGroup() and .endGroup(), where the parameters added in between are placed in a sub array, e.g.
