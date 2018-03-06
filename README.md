@@ -556,6 +556,70 @@ var queryArray = realm.queryBuilder.done();
 ```
 
 
+#### Static strings
+
+```javascript
+// Access with this pattern:
+var realm = self.realmController;
+var stringProperty = realm.FIELD_TYPE_STRING;
+
+/**
+ * Properties
+ */
+
+// Field object properties
+FIELD_OBJECT_NAME = "name";
+FIELD_OBJECT_TYPE = "type";
+FIELD_OBJECT_PRIMARYKEY = "key";
+FIELD_OBJECT_INDEX = "index";
+
+// Object description properties
+OBJECT_DESCRIPTION_NAME = "name";
+OBJECT_DESCRIPTION_TYPE = "type";
+OBJECT_DESCRIPTION_FIELDS = "fields";
+OBJECT_DESCRIPTION_KEY = "key";
+OBJECT_DESCRIPTION_INDEX = "index";
+
+// Field types
+FIELD_TYPE_STRING = "STRING";
+FIELD_TYPE_INTEGER = "INTEGER";
+FIELD_TYPE_BOOLEAN = "BOOLEAN";
+FIELD_TYPE_LONG = "LONG";
+FIELD_TYPE_DOUBLE = "DOUBLE";
+FIELD_TYPE_FLOAT = "FLOAT";
+FIELD_TYPE_BINARY = "BINARY";
+FIELD_TYPE_OBJECT = "OBJECT";
+FIELD_TYPE_LIST = "LIST";
+FIELD_TYPE_DATE = "DATE";
+
+// Query object properties
+QUERY_TYPE = "type";
+QUERY_FIELD = "field";
+// Query sort properties
+QUERY_SORT = "sort";
+QUERY_SORT_ASC = "asc";
+QUERY_SORT_DESC = "desc";
+// Query value properties
+QUERY_VALUE = "value";
+QUERY_VALUE_2 = "value2";
+// Query types
+QUERY_TYPE_BEGIN_GROUP = "beginGroup";
+QUERY_TYPE_END_GROUP = "endGroup";
+QUERY_TYPE_AND = "and";
+QUERY_TYPE_OR = "or";
+QUERY_TYPE_EQUAL_TO = "equalTo";
+QUERY_TYPE_NOT_EQUAL_TO = "notEqualTo";
+QUERY_TYPE_BEGINS_WITH = "beginsWith";
+QUERY_TYPE_ENDS_WITH = "endsWith";
+QUERY_TYPE_CONTAINS = "contains";
+QUERY_TYPE_BETWEEN = "between";
+QUERY_TYPE_GREATER_THAN = "greaterThan";
+QUERY_TYPE_GREATER_THAN_OR_EQUAL_TO = "greaterThanOrEqualTo";
+QUERY_TYPE_LESS_THAN = "lessThan";
+QUERY_TYPE_LESS_THAN_OR_EQUAL_TO = "lessThanOrEqualTo";
+QUERY_TYPE_LIKE = "like";
+```
+
 ## Installation
 
 This example app contains 3 important objects:
