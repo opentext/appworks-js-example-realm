@@ -132,7 +132,7 @@ function insertEmployee() {
     , "ability" : ability
     , "active"  : active
     , "department"  : departmentObject
-    , "documents" : documents
+    , "documents" : documentsObject
   };
 
   insert(

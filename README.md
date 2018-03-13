@@ -176,8 +176,8 @@ Add multiple field to your table
 Examples
 ```javascript
 var fields = [
-  {"name":"id", "type":"STRING", "key":true}
-  , {"name":"employee", "type":"STRING"}
+  {"name":"id", "type":"STRING", "key":true} // Make this field the primary key
+  , {"name":"employee", "type":"STRING", "index":true} // Make this field the index
   , {"name":"contact", "type":"STRING"}
   , {"name":"region", "type":"STRING"}
   , {"name":"ability", "type":"INTEGER"}
@@ -558,6 +558,169 @@ realm.queryBuilder.endGroup();
 var queryArray = realm.queryBuilder.done();
 ```
 
+#### Date data type
+
+The date object needs to be formatted in a specific way before using in a query.
+
+The specific pattern is:
+```javascript
+"yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+```
+
+Example usage:
+```javascript
+var realm = self.realmController;
+var title = "My Document";
+var filename = "mydocument.docx";
+
+// Now datetime
+var now = new Date();
+// Put into the following ISO format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX e.g. 2018-03-12T12:30:15.817Z
+var created = now.toISOString();
+var modified = now.toISOString();
+
+var documentObject = {
+  "title"  : title
+  , "filename" : filename
+  , "created"  : created
+  , "modified" : modified
+};
+
+realm.insert(
+  "documents"
+  , documentObject
+  , function() {
+    resetDocumentForm();
+    showDataView();
+    showDataViewDocument();
+  }
+  , function(error) {
+    out(error);
+  }
+);
+```
+
+#### Related Objects - One to One and One to Many
+
+A field with a related object needs to be added with the field type and related object name in a JSON object when using the addField method
+
+To add a One to One field, add an field with type FIELD_TYPE_OBJECT (OBJECT)
+
+To add a One to Many field, add an field with type FIELD_TYPE_LIST (LIST)
+
+Example creating related fields:
+```javascript
+var REALM_OBJECT_NAME_EMPLOYEES = "employees";
+var REALM_OBJECT_NAME_DEPARTMENTS = "departments";
+var REALM_OBJECT_NAME_DOCUMENTS = "documents";
+var fields = [
+  {"name":"id", "type":"STRING", "key":true}
+  , {"name":"employee", "type":"STRING", "index":true}
+  , {"name":"contact", "type":"STRING"}
+  , {"name":"region", "type":"STRING"}
+  , {"name":"ability", "type":"INTEGER"}
+  , {"name":"active", "type":"BOOLEAN"}
+  , {"name":"department", "type":"OBJECT", "relationship":REALM_OBJECT_NAME_DEPARTMENTS} // One to One relationship
+  , {"name":"documents", "type":"LIST", "relationship":REALM_OBJECT_NAME_DOCUMENTS} // One to Many relationship
+];
+
+self.realmController.addFields(
+  REALM_OBJECT_NAME_EMPLOYEES
+  , fields
+  , function() {
+    console.log("Fields added successfully");
+  }
+  , function (error) {
+    console.log(error);
+  }
+);
+```
+
+To insert or update a row with a related object, you will need to provide the value as an JSON object instead of a string/number. This will need to include the related object/table name, the field to query and the value to query with to isolate the row(s) to relate.
+
+Example:
+```javascript
+  var realm = self.realmController;
+
+  var employeeName = "Bob";
+  var contact = "555123123";
+  var region = "EMEA";
+  var ability = 7;
+  var active = true;
+
+  var department = "111aa-111aa-111aa-111aa"; // The id of department   
+  var departmentObject = {};
+  departmentObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DEPARTMENTS;
+  departmentObject[realm.QUERY_FIELD] = "id";
+  departmentObject[realm.QUERY_VALUE] = department;
+
+  var documents = ["222bb-222bb-222bb-222bb","333cc-333cc-333cc-333cc","444dd-444dd-444dd-444dd"]; // Array of id's of related documents
+  var documentsObject = {};
+  documentsObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DOCUMENTS;
+  documentsObject[realm.QUERY_FIELD] = "id";
+  documentsObject[realm.QUERY_VALUE] = documents;
+
+  var employee = {
+    "employee"  : employeeName
+    , "contact" : contact
+    , "region"  : region
+    , "ability" : ability
+    , "active"  : active
+    , "department"  : departmentObject
+    , "documents" : documentsObject
+  };
+
+  realm.insert(
+    REALM_OBJECT_NAME_EMPLOYEES
+    , employee
+    , function() {
+      resetForm();
+      showDataView();
+      showDataViewEmployee();
+    }
+    , function(error) {
+      out(error);
+    }
+  );
+```
+
+When you select an object with a related object or list the JSON received will look like this:
+```javascript
+  var id =
+  // Employee JSON objects
+  {
+    "id"        : "123ab-456cd-678efg-910hi"
+    , "employee": "Bob"
+    , "contact" : "555123123"
+    , "region"  : "EMEA"
+    , "ability" : 7
+    , "active"  : true
+    , "department"  : {
+      "id" : "111aa-111aa-111aa-111aa"
+      , "name" : "Sales"
+    }
+    , "documents" : [
+      {
+        "id" : "222bb-222bb-222bb-222bb"
+        , "title" : "My Document"
+        , "filename" : "mydocument.docx"
+      }
+      , {
+        "id" : "333cc-333cc-333cc-333cc"
+        , "title" : "My Presentation"
+        , "filename" : "mypresentation.pptx"
+      }
+      , {
+        "id" : "444dd-444dd-444dd-444dd"
+        , "title" : "My Spreadsheet"
+        , "filename" : "myspreadsheet.xlxs"
+      }
+    ]
+  }
+```
+
+
+
 
 #### Static strings
 
@@ -575,6 +738,7 @@ FIELD_OBJECT_NAME = "name";
 FIELD_OBJECT_TYPE = "type";
 FIELD_OBJECT_PRIMARYKEY = "key";
 FIELD_OBJECT_INDEX = "index";
+FIELD_OBJECT_RELATIONSHIP = "relationship";
 
 // Object description properties
 OBJECT_DESCRIPTION_NAME = "name";
@@ -588,8 +752,10 @@ FIELD_TYPE_STRING = "STRING";
 FIELD_TYPE_INTEGER = "INTEGER";
 FIELD_TYPE_BOOLEAN = "BOOLEAN";
 FIELD_TYPE_LONG = "LONG";
+FIELD_TYPE_SHORT = "SHORT";
 FIELD_TYPE_DOUBLE = "DOUBLE";
 FIELD_TYPE_FLOAT = "FLOAT";
+FIELD_TYPE_BYTE = "BYTE";
 FIELD_TYPE_BINARY = "BINARY";
 FIELD_TYPE_OBJECT = "OBJECT";
 FIELD_TYPE_LIST = "LIST";
@@ -598,6 +764,7 @@ FIELD_TYPE_DATE = "DATE";
 // Query object properties
 QUERY_TYPE = "type";
 QUERY_FIELD = "field";
+QUERY_OBJECT_NAME = "object";
 // Query sort properties
 QUERY_SORT = "sort";
 QUERY_SORT_ASC = "asc";
