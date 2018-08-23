@@ -31,90 +31,93 @@ function createTableObjects() {
  * Departments Table
  */
 function createDepartmentsTable(successFn, errorFn) {
-  var realm = getRealmController();
-  realm.createObject(REALM_OBJECT_NAME_DEPARTMENTS, function() {
-      // Table created, add the fields
-      var fields = [
-        {"name":"id", "type":"STRING", "key":true}
-        , {"name":"name", "type":"STRING", "index":true}
-      ];
-      addFields(REALM_OBJECT_NAME_DEPARTMENTS, fields, function() {
-        successFn();
-      }, function (error) {
+  getRealmController(function (realm) {
+    realm.createObject(REALM_OBJECT_NAME_DEPARTMENTS, function() {
+        // Table created, add the fields
+        var fields = [
+          {"name":"id", "type":"STRING", "key":true}
+          , {"name":"name", "type":"STRING", "index":true}
+        ];
+        addFields(REALM_OBJECT_NAME_DEPARTMENTS, fields, function() {
+          successFn();
+        }, function (error) {
+          errorFn(error);
+        });
+      }, function(error) {
         errorFn(error);
       });
-    }, function(error) {
-      errorFn(error);
-    });
+  });
 }
 
 /**
  * Documents Table
  */
 function createDocumentsTable(successFn, errorFn) {
-  var realm = getRealmController();
-  realm.createObject(REALM_OBJECT_NAME_DOCUMENTS, function() {
-      // Table created, add the fields
-      var fields = [
-        {"name":"id", "type":"STRING"}
-        , {"name":"title", "type":"STRING"}
-        , {"name":"filename", "type":"STRING", "key":true}
-        , {"name":"created", "type":"DATE"}
-        , {"name":"modified", "type":"DATE"}
-      ];
-      addFields(REALM_OBJECT_NAME_DOCUMENTS, fields, function() {
-        successFn();
-      }, function (error) {
+  getRealmController(function (realm) {
+    realm.createObject(REALM_OBJECT_NAME_DOCUMENTS, function() {
+        // Table created, add the fields
+        var fields = [
+          {"name":"id", "type":"STRING", "key":true}
+          , {"name":"title", "type":"STRING"}
+          , {"name":"filename", "type":"STRING"}
+          , {"name":"created", "type":"DATE"}
+          , {"name":"modified", "type":"DATE"}
+        ];
+        addFields(REALM_OBJECT_NAME_DOCUMENTS, fields, function() {
+          successFn();
+        }, function (error) {
+          errorFn(error);
+        });
+      }, function(error) {
         errorFn(error);
       });
-    }, function(error) {
-      errorFn(error);
-    });
+  });
 }
 
 /**
  * Employees Table
  */
 function createEmployeesTable(successFn, errorFn) {
-  var realm = getRealmController();
-  realm.createObject(REALM_OBJECT_NAME_EMPLOYEES, function() {
-      // Table created, add the fields
-      var fields = [
-        {"name":"id", "type":"STRING", "key":true}
-        , {"name":"employee", "type":"STRING", "index":true}
-        , {"name":"contact", "type":"STRING"}
-        , {"name":"region", "type":"STRING"}
-        , {"name":"ability", "type":"INTEGER"}
-        , {"name":"active", "type":"BOOLEAN"}
-        , {"name":"department", "type":"OBJECT", "relationship":REALM_OBJECT_NAME_DEPARTMENTS} // One to One relationship
-        , {"name":"documents", "type":"LIST", "relationship":REALM_OBJECT_NAME_DOCUMENTS} // One to Many relationship
-      ];
-      addFields(REALM_OBJECT_NAME_EMPLOYEES, fields, function() {
-        successFn();
-      }, function (error) {
+  getRealmController(function (realm) {
+    realm.createObject(REALM_OBJECT_NAME_EMPLOYEES, function() {
+        // Table created, add the fields
+        var fields = [
+          {"name":"id", "type":"STRING", "key":true}
+          , {"name":"employee", "type":"STRING", "index":true}
+          , {"name":"contact", "type":"STRING"}
+          , {"name":"region", "type":"STRING"}
+          , {"name":"ability", "type":"INTEGER"}
+          , {"name":"active", "type":"BOOLEAN"}
+          , {"name":"department", "type":"OBJECT", "relationship":REALM_OBJECT_NAME_DEPARTMENTS} // One to One relationship
+          , {"name":"documents", "type":"LIST", "relationship":REALM_OBJECT_NAME_DOCUMENTS} // One to Many relationship
+        ];
+        addFields(REALM_OBJECT_NAME_EMPLOYEES, fields, function() {
+          successFn();
+        }, function (error) {
+          errorFn(error);
+        });
+      }, function(error) {
         errorFn(error);
       });
-    }, function(error) {
-      errorFn(error);
-    });
+  });
 }
 
 /**
  * Realm table field addition
  */
 function addFields(object, fields, successFn, errorFn) {
-  var realm = getRealmController();
-
-  realm.addFields(
-    object
-    , fields
-    , function(description) {
-      successFn();
-    }
-    , function(error) {
-      errorFn(error);
-    }
-  );
+  getRealmController(function (realm) {
+    realm.addFields(
+      object
+      , fields
+      , function(description) {
+        successFn();
+      }
+      , function(error) {
+        errorFn(error);
+      }
+    );
+  });
 }
 
 /*****************************
@@ -169,14 +172,15 @@ function descriptionToHtml(description) {
 }
 
 function getObjectDescription(objectName, success) {
-  var realm = getRealmController();
-  realm.describeObject(
-    objectName
-    , function(description) {
-      success(description);
-    }
-    , function(error) {
-      out(error);
-    }
-  )
+  getRealmController(function (realm) {
+    realm.describeObject(
+      objectName
+      , function(description) {
+        success(description);
+      }
+      , function(error) {
+        out(error);
+      }
+    );
+  });
 }

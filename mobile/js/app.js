@@ -23,19 +23,22 @@ function onDeviceReady() {
 /**
  * Get the global realm instance, we only want one for our app.
  */
-function getRealmController() {
+function getRealmController(callback) {
   if(self.realmController == null) {
     self.realmController = new Appworks.AWRealm();
     self.realmController.startRealm(
       function() {
         out("Realm started");
+        callback(self.realmController);
       }
       , function (error) {
         out(error);
+        callback(null);
       }
     );
+  } else {
+    callback(self.realmController);
   }
-  return self.realmController;
 }
 
 /**********************
@@ -52,52 +55,55 @@ function showDataEntry() {
  * Realm insert function
  */
 function insert(object, data, successFn, errorFn) {
-  var realm = getRealmController();
-  realm.insert(
-    object
-    , data
-    , function() {
-      successFn()
-    }
-    , function(error) {
-      errorFn(error);
-    }
-  );
+  getRealmController(function (realm) {
+    realm.insert(
+      object
+      , data
+      , function() {
+        successFn()
+      }
+      , function(error) {
+        errorFn(error);
+      }
+    );
+  });
 }
 
 /**
  * Realm update function
  */
 function update(object, data, query, successFn, errorFn) {
-  var realm = getRealmController();
-  realm.update(
-    object
-    , data
-    , query
-    , function() {
-      successFn();
-    }
-    , function(error) {
-      errorFn(error);
-    }
-  );
+  getRealmController(function (realm) {
+    realm.update(
+      object
+      , data
+      , query
+      , function() {
+        successFn();
+      }
+      , function(error) {
+        errorFn(error);
+      }
+    );
+  });
 }
 
 /**
  * Realm remove function
  */
 function remove(object, query, success, errorFn) {
-  var realm = getRealmController();
-  realm.remove(
-    object
-    , query
-    , function() {
-      successFn();
-    }
-    , function(error) {
-      errorFn(error);
-    }
-  );
+  getRealmController(function (realm) {
+    realm.remove(
+      object
+      , query
+      , function() {
+        successFn();
+      }
+      , function(error) {
+        errorFn(error);
+      }
+    );
+  });
 }
 
 /**************************
@@ -114,18 +120,19 @@ function showDataView() {
  * Perform the realm select
  */
 function select(object, query, sort, successFn, errorFn) {
-  var realm = getRealmController();
-  realm.select(
-    object
-    , query
-    , sort
-    , function(result) {
-      successFn(result);
-    }
-    , function(error) {
-      errorFn(error);
-    }
-  );
+  getRealmController(function (realm) {
+    realm.select(
+      object
+      , query
+      , sort
+      , function(result) {
+        successFn(result);
+      }
+      , function(error) {
+        errorFn(error);
+      }
+    );
+  });
 }
 
 /***************************

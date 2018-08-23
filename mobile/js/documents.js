@@ -66,37 +66,38 @@ function insertDocument() {
  * Call the realm update method
  */
 function updateDocument() {
-  var id = getObject("field-documentId").value;
+  getRealmController(function (realm) {
+    var id = getObject("field-documentId").value;
 
-  var title = getObject("field-documentTitle").value;
-  var filename = getObject("field-documentFilename").value;
+    var title = getObject("field-documentTitle").value;
+    var filename = getObject("field-documentFilename").value;
 
-  // Now datetime
-  var now = new Date();
-  // Put into the following ISO format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX e.g. 2018-03-12T12:30:15.817Z
-  var modified = now.toISOString();
+    // Now datetime
+    var now = new Date();
+    // Put into the following ISO format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX e.g. 2018-03-12T12:30:15.817Z
+    var modified = now.toISOString();
 
-  var documentObject = {
-    "title"  : title
-    , "filename" : filename
-    , "modified" : modified
-  };
+    var documentObject = {
+      "title"  : title
+      , "filename" : filename
+      , "modified" : modified
+    };
 
-  var realm = getRealmController();
-  var query = realm.queryBuilder.equalTo("id",id).done();
+    var query = realm.queryBuilder.equalTo("id",id).done();
 
-  update(
-    REALM_OBJECT_NAME_DOCUMENTS
-    , documentObject
-    , query
-    , function() {
-      resetForm();
-      showDataView();
-      showDataViewDocument();
-    }
-    , function (error) {
-      out(error);
-    });
+    update(
+      REALM_OBJECT_NAME_DOCUMENTS
+      , documentObject
+      , query
+      , function() {
+        resetForm();
+        showDataView();
+        showDataViewDocument();
+      }
+      , function (error) {
+        out(error);
+      });
+  });
 }
 
 /**
@@ -105,21 +106,22 @@ function updateDocument() {
  * Call the realm remove method
  */
 function removeDocument() {
-  var id = getObject("field-documentId").value;
-  var realm = getRealmController();
-  var query = realm.queryBuilder.equalTo("id",id).done();
+  getRealmController(function (realm) {
+    var id = getObject("field-documentId").value;
+    var query = realm.queryBuilder.equalTo("id",id).done();
 
-  remove(
-    REALM_OBJECT_NAME_DOCUMENTS
-    , query
-    , function() {
-      resetForm();
-      showDataView();
-      showDataViewDocument();
-    }
-    , function (error) {
-      out(error);
-    });
+    remove(
+      REALM_OBJECT_NAME_DOCUMENTS
+      , query
+      , function() {
+        resetForm();
+        showDataView();
+        showDataViewDocument();
+      }
+      , function (error) {
+        out(error);
+      });
+  });
 }
 
 /**************************
@@ -127,14 +129,15 @@ function removeDocument() {
  **************************/
 
 function showDataViewDocument() {
-  hide("data-view-departments-wrapper");
-  hide("data-view-employees-wrapper");
-  show("data-view-documents-wrapper");
+  getRealmController(function (realm) {
+    hide("data-view-departments-wrapper");
+    hide("data-view-employees-wrapper");
+    show("data-view-documents-wrapper");
 
-  var realm = getRealmController();
-  self.sortDirection = realm.QUERY_SORT_ASC;
-  self.sortField = "title";
-  refreshDocumentsView();
+    self.sortDirection = realm.QUERY_SORT_ASC;
+    self.sortField = "title";
+    refreshDocumentsView();
+  });
 }
 
 function refreshDocumentsView() {
@@ -147,37 +150,39 @@ function refreshDocumentsView() {
  * Select all documents
  */
 function selectAllDocuments(success) {
-  var realm = getRealmController();
-  var query = realm.queryBuilder.done();
-  sort = {};
-  sort[realm.QUERY_FIELD] = self.sortField;
-  sort[realm.QUERY_SORT] = self.sortDirection;
-  select(
-    REALM_OBJECT_NAME_DOCUMENTS
-    , query
-    , sort
-    , function(results) {
-      success(results);
-    }
-    , function (error) {
-      out(error);
+  getRealmController(function (realm) {
+    var query = realm.queryBuilder.done();
+    sort = {};
+    sort[realm.QUERY_FIELD] = self.sortField;
+    sort[realm.QUERY_SORT] = self.sortDirection;
+    select(
+      REALM_OBJECT_NAME_DOCUMENTS
+      , query
+      , sort
+      , function(results) {
+        success(results);
+      }
+      , function (error) {
+        out(error);
+      });
     });
 }
 
 function sortDocumentBy(field) {
-  var realm = getRealmController();
-  if(self.sortField == field) {
-    if(self.sortDirection == realm.QUERY_SORT_DESC) {
-      self.sortDirection = realm.QUERY_SORT_ASC;
+  getRealmController(function (realm) {
+    if(self.sortField == field) {
+      if(self.sortDirection == realm.QUERY_SORT_DESC) {
+        self.sortDirection = realm.QUERY_SORT_ASC;
+      } else {
+        self.sortDirection = realm.QUERY_SORT_DESC;
+      }
     } else {
-      self.sortDirection = realm.QUERY_SORT_DESC;
+      self.sortDirection = realm.QUERY_SORT_ASC;
     }
-  } else {
-    self.sortDirection = realm.QUERY_SORT_ASC;
-  }
-  self.sortField = field;
+    self.sortField = field;
 
-  refreshDocumentsView();
+    refreshDocumentsView();
+  });
 }
 
 function outputDocuments(documents) {
@@ -225,18 +230,19 @@ function showDocument(id) {
  * Select by document
  */
 function selectDocument(id, success) {
-  var realm = getRealmController();
-  var query = realm.queryBuilder.equalTo("id",id).done();
-  var sort = null;
-  select(
-    REALM_OBJECT_NAME_DOCUMENTS
-    , query
-    , null
-    , function(result) {
-      success(result[0]);
-    }
-    , function (error) {
-      out(error);
-    }
-  );
+  getRealmController(function (realm) {
+    var query = realm.queryBuilder.equalTo("id",id).done();
+    var sort = null;
+    select(
+      REALM_OBJECT_NAME_DOCUMENTS
+      , query
+      , null
+      , function(result) {
+        success(result[0]);
+      }
+      , function (error) {
+        out(error);
+      }
+    );
+  });
 }

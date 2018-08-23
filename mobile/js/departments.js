@@ -26,26 +26,27 @@ function showDataEntryDepartment() {
   * Call the realm insert method
   */
 function insertDepartment() {
-  var departmentName = getObject("field-departmentName").value;
-  var realm = getRealmController();
-  var department = {
-    "name"  : departmentName
-  };
+  getRealmController(function (realm) {
+    var departmentName = getObject("field-departmentName").value;
+    var department = {
+      "name"  : departmentName
+    };
 
-  insert(
-    REALM_OBJECT_NAME_DEPARTMENTS
-    , department
-    , function() {
-      setGlobalDepartments(function(){
-        resetDepartmentForm();
-        showDataView();
-        showDataViewDepartment()
-      });
-    }
-    , function(error) {
-      out(error);
-    }
-  );
+    insert(
+      REALM_OBJECT_NAME_DEPARTMENTS
+      , department
+      , function() {
+        setGlobalDepartments(function(){
+          resetDepartmentForm();
+          showDataView();
+          showDataViewDepartment()
+        });
+      }
+      , function(error) {
+        out(error);
+      }
+    );
+  });
 }
 
 /**
@@ -55,28 +56,29 @@ function insertDepartment() {
  * Call the realm update method
  */
 function updateDepartment() {
-  var realm = getRealmController();
-  var id = getObject("field-departmentId").value;
-  var query = realm.queryBuilder.equalTo("id",id).done();
+  getRealmController(function (realm) {
+    var id = getObject("field-departmentId").value;
+    var query = realm.queryBuilder.equalTo("id",id).done();
 
-  var departmentName = getObject("field-departmentName").value;
-  var department = {
-   "name"  : departmentName
-  };
+    var departmentName = getObject("field-departmentName").value;
+    var department = {
+     "name"  : departmentName
+    };
 
-  update(
-    REALM_OBJECT_NAME_DEPARTMENTS
-    , department
-    , query
-    , function() {
-      setGlobalDepartments(function(){
-        resetDepartmentForm();
-        showDataView();
-        showDataViewDepartment()
-      });
-    }
-    , function (error) {
-      out(error);
+    update(
+      REALM_OBJECT_NAME_DEPARTMENTS
+      , department
+      , query
+      , function() {
+        setGlobalDepartments(function(){
+          resetDepartmentForm();
+          showDataView();
+          showDataViewDepartment()
+        });
+      }
+      , function (error) {
+        out(error);
+    });
   });
 }
 
@@ -86,23 +88,24 @@ function updateDepartment() {
  * Call the realm remove method
  */
 function removeDepartment() {
-  var realm = getRealmController();
-  var id = getObject("field-departmentId").value;
-  var query = realm.queryBuilder.equalTo("id",id).done();
+  getRealmController(function (realm) {
+    var id = getObject("field-departmentId").value;
+    var query = realm.queryBuilder.equalTo("id",id).done();
 
-  remove(
-    REALM_OBJECT_NAME_DEPARTMENTS
-    , query
-    , function() {
-      setGlobalDepartments(function(){
-        resetDepartmentForm();
-        showDataView();
-        showDataViewDepartment()
+    remove(
+      REALM_OBJECT_NAME_DEPARTMENTS
+      , query
+      , function() {
+        setGlobalDepartments(function(){
+          resetDepartmentForm();
+          showDataView();
+          showDataViewDepartment()
+        });
+      }
+      , function (error) {
+        out(error);
       });
-    }
-    , function (error) {
-      out(error);
-    });
+  });
 }
 
 /**************************
@@ -137,22 +140,23 @@ function setGlobalDepartments(successFn) {
 * Select all departments
 */
 function selectAllDepartments(successFn, errorFn) {
- var realm = getRealmController();
- var query = realm.queryBuilder.done();
- sort = {};
- sort[realm.QUERY_FIELD] = "name";
- sort[realm.QUERY_SORT] = realm.QUERY_SORT_ASC;
- select(
-   REALM_OBJECT_NAME_DEPARTMENTS
-   , query
-   , sort
-   , function(results) {
-     successFn(results);
-   }
-   , function(error) {
-     errorFn(error);
-   }
- );
+  getRealmController(function (realm) {
+   var query = realm.queryBuilder.done();
+   sort = {};
+   sort[realm.QUERY_FIELD] = "name";
+   sort[realm.QUERY_SORT] = realm.QUERY_SORT_ASC;
+   select(
+     REALM_OBJECT_NAME_DEPARTMENTS
+     , query
+     , sort
+     , function(results) {
+       successFn(results);
+     }
+     , function(error) {
+       errorFn(error);
+     }
+   );
+  });
 }
 
 function refreshDepartmentsView() {

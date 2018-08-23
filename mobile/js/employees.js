@@ -31,37 +31,38 @@ function populateDepartment() {
  *
  */
 function populateDocuments() {
-  var el = getObject("document-checkbox-wrapper");
-  el.innerHTML = "";
+  getRealmController(function (realm) {
+    var el = getObject("document-checkbox-wrapper");
+    el.innerHTML = "";
 
-  var realm = getRealmController();
-  self.sortDirection = realm.QUERY_SORT_ASC;
-  self.sortField = "title";
-  selectAllDocuments(function(results) {
-    for(var i=0; i<results.length; i++) {
-      var div = document.createElement("div");
-      var label = document.createElement("label");
-      label.class = "form-check-label";
+    self.sortDirection = realm.QUERY_SORT_ASC;
+    self.sortField = "title";
+    selectAllDocuments(function(results) {
+      for(var i=0; i<results.length; i++) {
+        var div = document.createElement("div");
+        var label = document.createElement("label");
+        label.class = "form-check-label";
 
-      var checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.class = "form-check-input";
-      checkbox.name = "field-documents[]";
-      checkbox.value = results[i].id;
+        var checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.class = "form-check-input";
+        checkbox.name = "field-documents[]";
+        checkbox.value = results[i].id;
 
-      for(var j=0; j<self.employeeDocuments.length; j++) {
-        if(results[i].id == self.employeeDocuments[j].id) {
-          checkbox.checked = true;
+        for(var j=0; j<self.employeeDocuments.length; j++) {
+          if(results[i].id == self.employeeDocuments[j].id) {
+            checkbox.checked = true;
+          }
         }
+
+        el.appendChild(div);
+        div.appendChild(label);
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(" " + results[i].title));
+
       }
-
-      el.appendChild(div);
-      div.appendChild(label);
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(" " + results[i].title));
-
-    }
-    self.employeeDocuments.length = [];
+      self.employeeDocuments.length = [];
+    });
   });
 }
 
@@ -88,6 +89,7 @@ function resetForm() {
   getObject("field-region").selectedIndex = -1;
   getObject("field-ability").value = "";
   getObject("field-active").checked = false;
+  getObject("field-department").selectedIndex='0';
 
   show("insert-button");
   hide("update-button");
@@ -100,53 +102,54 @@ function resetForm() {
  * Call the realm insert method
  */
 function insertEmployee() {
-  var employeeName = getObject("field-employeeName").value;
-  var contact = getObject("field-contact").value;
+  getRealmController(function (realm) {
+    var employeeName = getObject("field-employeeName").value;
+    var contact = getObject("field-contact").value;
 
-  var regionElement = getObject("field-region")
-  var region = regionElement.options[regionElement.selectedIndex].value;
+    var regionElement = getObject("field-region")
+    var region = regionElement.options[regionElement.selectedIndex].value;
 
-  var ability = getObject("field-ability").value;
-  var active = getObject("field-active").checked;
+    var ability = getObject("field-ability").value;
+    var active = getObject("field-active").checked;
 
-  var departmentElement = getObject("field-department")
-  var department = departmentElement.options[departmentElement.selectedIndex].value;
+    var departmentElement = getObject("field-department")
+    var department = departmentElement.options[departmentElement.selectedIndex].value;
 
-  var documents = getSelectedDocuments();
+    var documents = getSelectedDocuments();
 
-  var realm = getRealmController();
-  var departmentObject = {};
-  departmentObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DEPARTMENTS;
-  departmentObject[realm.QUERY_FIELD] = "id";
-  departmentObject[realm.QUERY_VALUE] = department;
+    var departmentObject = {};
+    departmentObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DEPARTMENTS;
+    departmentObject[realm.QUERY_FIELD] = "id";
+    departmentObject[realm.QUERY_VALUE] = department;
 
-  var documentsObject = {};
-  documentsObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DOCUMENTS;
-  documentsObject[realm.QUERY_FIELD] = "id";
-  documentsObject[realm.QUERY_VALUE] = documents;
+    var documentsObject = {};
+    documentsObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DOCUMENTS;
+    documentsObject[realm.QUERY_FIELD] = "id";
+    documentsObject[realm.QUERY_VALUE] = documents;
 
-  var employee = {
-    "employee"  : employeeName
-    , "contact" : contact
-    , "region"  : region
-    , "ability" : ability
-    , "active"  : active
-    , "department"  : departmentObject
-    , "documents" : documentsObject
-  };
+    var employee = {
+      "employee"  : employeeName
+      , "contact" : contact
+      , "region"  : region
+      , "ability" : ability
+      , "active"  : active
+      , "department"  : departmentObject
+      , "documents" : documentsObject
+    };
 
-  insert(
-    REALM_OBJECT_NAME_EMPLOYEES
-    , employee
-    , function() {
-      resetForm();
-      showDataView();
-      showDataViewEmployee();
-    }
-    , function(error) {
-      out(error);
-    }
-  );
+    insert(
+      REALM_OBJECT_NAME_EMPLOYEES
+      , employee
+      , function() {
+        resetForm();
+        showDataView();
+        showDataViewEmployee();
+      }
+      , function(error) {
+        out(error);
+      }
+    );
+  });
 }
 
 /**
@@ -156,57 +159,57 @@ function insertEmployee() {
  * Call the realm update method
  */
 function updateEmployee() {
-  var id = getObject("field-id").value;
+  getRealmController(function (realm) {
+    var id = getObject("field-id").value;
 
-  var employeeName = getObject("field-employeeName").value;
-  var contact = getObject("field-contact").value;
+    var employeeName = getObject("field-employeeName").value;
+    var contact = getObject("field-contact").value;
 
-  var regionElement = getObject("field-region")
-  var region = regionElement.options[regionElement.selectedIndex].value;
+    var regionElement = getObject("field-region")
+    var region = regionElement.options[regionElement.selectedIndex].value;
 
-  var ability = getObject("field-ability").value;
-  var active = getObject("field-active").checked;
+    var ability = getObject("field-ability").value;
+    var active = getObject("field-active").checked;
 
-  var departmentElement = getObject("field-department")
-  var department = departmentElement.options[departmentElement.selectedIndex].value;
+    var departmentElement = getObject("field-department")
+    var department = departmentElement.options[departmentElement.selectedIndex].value;
 
-  var realm = getRealmController();
-  var departmentObject = {};
-  departmentObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DEPARTMENTS;
-  departmentObject[realm.QUERY_FIELD] = "id";
-  departmentObject[realm.QUERY_VALUE] = department;
+    var departmentObject = {};
+    departmentObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DEPARTMENTS;
+    departmentObject[realm.QUERY_FIELD] = "id";
+    departmentObject[realm.QUERY_VALUE] = department;
 
-  var documents = getSelectedDocuments();
-  var documentsObject = {};
-  documentsObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DOCUMENTS;
-  documentsObject[realm.QUERY_FIELD] = "id";
-  documentsObject[realm.QUERY_VALUE] = documents;
+    var documents = getSelectedDocuments();
+    var documentsObject = {};
+    documentsObject[realm.QUERY_OBJECT_NAME] = REALM_OBJECT_NAME_DOCUMENTS;
+    documentsObject[realm.QUERY_FIELD] = "id";
+    documentsObject[realm.QUERY_VALUE] = documents;
 
-  var employee = {
-    "employee"  : employeeName
-    , "contact" : contact
-    , "region"  : region
-    , "ability" : ability
-    , "active"  : active
-    , "department"  : departmentObject
-    , "documents" : documentsObject
-  };
+    var employee = {
+      "employee"  : employeeName
+      , "contact" : contact
+      , "region"  : region
+      , "ability" : ability
+      , "active"  : active
+      , "department"  : departmentObject
+      , "documents" : documentsObject
+    };
 
-  var realm = getRealmController();
-  var query = realm.queryBuilder.equalTo("id",id).done();
+    var query = realm.queryBuilder.equalTo("id",id).done();
 
-  update(
-    REALM_OBJECT_NAME_EMPLOYEES
-    , employee
-    , query
-    , function() {
-      resetForm();
-      showDataView();
-      showDataViewEmployee();
-    }
-    , function (error) {
-      out(error);
-    });
+    update(
+      REALM_OBJECT_NAME_EMPLOYEES
+      , employee
+      , query
+      , function() {
+        resetForm();
+        showDataView();
+        showDataViewEmployee();
+      }
+      , function (error) {
+        out(error);
+      });
+  });
 }
 
 /**
@@ -215,21 +218,22 @@ function updateEmployee() {
  * Call the realm remove method
  */
 function removeEmployee() {
-  var id = getObject("field-id").value;
-  var realm = getRealmController();
-  var query = realm.queryBuilder.equalTo("id",id).done();
+  getRealmController(function (realm) {
+    var id = getObject("field-id").value;
+    var query = realm.queryBuilder.equalTo("id",id).done();
 
-  remove(
-    REALM_OBJECT_NAME_EMPLOYEES
-    , query
-    , function() {
-      resetForm();
-      showDataView();
-      showDataViewEmployee();
-    }
-    , function (error) {
-      out(error);
-    });
+    remove(
+      REALM_OBJECT_NAME_EMPLOYEES
+      , query
+      , function() {
+        resetForm();
+        showDataView();
+        showDataViewEmployee();
+      }
+      , function (error) {
+        out(error);
+      });
+  });
 }
 
 /**************************
@@ -237,51 +241,54 @@ function removeEmployee() {
  **************************/
 
 function showDataViewEmployee() {
-  hide("data-view-departments-wrapper");
-  show("data-view-employees-wrapper");
-  hide("data-view-documents-wrapper");
+  getRealmController(function (realm) {
+    hide("data-view-departments-wrapper");
+    show("data-view-employees-wrapper");
+    hide("data-view-documents-wrapper");
 
-  var realm = getRealmController();
-  self.sortDirection = realm.QUERY_SORT_ASC;
-  self.sortField = "employee";
-  selectAllEmployees();
+    selectAllEmployees();
+  });
 }
 
 /**
  * Select all employees
  */
 function selectAllEmployees() {
-  var realm = getRealmController();
-  var query = realm.queryBuilder.done();
-  sort = {};
-  sort[realm.QUERY_FIELD] = self.sortField;
-  sort[realm.QUERY_SORT] = self.sortDirection;
-  select(
-    REALM_OBJECT_NAME_EMPLOYEES
-    , query
-    , sort
-    , function(results) {
-      outputEmployees(results);
-    }
-    , function (error) {
-      out(error);
-    });
+  getRealmController(function (realm) {
+    self.sortDirection = realm.QUERY_SORT_ASC;
+    self.sortField = "employee";
+    var query = realm.queryBuilder.done();
+    sort = {};
+    sort[realm.QUERY_FIELD] = self.sortField;
+    sort[realm.QUERY_SORT] = self.sortDirection;
+    select(
+      REALM_OBJECT_NAME_EMPLOYEES
+      , query
+      , sort
+      , function(results) {
+        outputEmployees(results);
+      }
+      , function (error) {
+        out(error);
+      });
+  });
 }
 
 function sortBy(field) {
-  var realm = getRealmController();
-  if(self.sortField == field) {
-    if(self.sortDirection == realm.QUERY_SORT_DESC) {
-      self.sortDirection = realm.QUERY_SORT_ASC;
+  getRealmController(function (realm) {
+    if(self.sortField == field) {
+      if(self.sortDirection == realm.QUERY_SORT_DESC) {
+        self.sortDirection = realm.QUERY_SORT_ASC;
+      } else {
+        self.sortDirection = realm.QUERY_SORT_DESC;
+      }
     } else {
-      self.sortDirection = realm.QUERY_SORT_DESC;
+      self.sortDirection = realm.QUERY_SORT_ASC;
     }
-  } else {
-    self.sortDirection = realm.QUERY_SORT_ASC;
-  }
-  self.sortField = field;
+    self.sortField = field;
 
-  selectAllEmployees();
+    selectAllEmployees();
+  });
 }
 
 function outputEmployees(employees) {
@@ -322,6 +329,7 @@ function showEmployee(id) {
     getObject("field-region").value = employee.region;
     getObject("field-ability").value = employee.ability;
     getObject("field-active").checked = employee.active;
+    getObject("field-department").value = employee.department.id;
 
     self.employeeDocuments = employee.documents;
 
@@ -336,18 +344,19 @@ function showEmployee(id) {
  * Select by employee
  */
 function selectEmployee(id, success) {
-  var realm = getRealmController();
-  var query = realm.queryBuilder.equalTo("id",id).done();
-  var sort = null;
-  select(
-    REALM_OBJECT_NAME_EMPLOYEES
-    , query
-    , null
-    , function(result) {
-      success(result[0]);
-    }
-    , function (error) {
-      out(error);
-    }
-  );
+  getRealmController(function (realm) {
+    var query = realm.queryBuilder.equalTo("id",id).done();
+    var sort = null;
+    select(
+      REALM_OBJECT_NAME_EMPLOYEES
+      , query
+      , null
+      , function(result) {
+        success(result[0]);
+      }
+      , function (error) {
+        out(error);
+      }
+    );
+  });
 }
